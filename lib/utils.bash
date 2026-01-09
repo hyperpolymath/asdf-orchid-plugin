@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Plugin for orchid
 set -euo pipefail
 
 TOOL_NAME="orchid"
+BINARY_NAME="orchid"
 
 fail() {
   echo -e "\e[31mFail:\e[m $*" >&2
@@ -11,27 +11,27 @@ fail() {
 }
 
 list_all_versions() {
-  # Meta plugin - return placeholder version
-  echo "1.0.0"
+  curl -sL "https://api.github.com/repos/orchidhq/Orchid/releases" 2>/dev/null | jq -r '.[].tag_name // empty' 2>/dev/null | sed 's/^v//' | sort -V
 }
 
 download_release() {
   local version="$1"
   local download_path="$2"
-  # Meta plugin - nothing to download
   mkdir -p "$download_path"
   echo "$version" > "$download_path/VERSION"
+  echo "Source compilation required for $TOOL_NAME $version"
 }
 
 install_version() {
   local version="$1"
   local install_path="$2"
+  echo "Source compilation for $TOOL_NAME is not yet implemented"
+  echo "Please install $TOOL_NAME $version manually"
   mkdir -p "$install_path/bin"
-  echo "$version" > "$install_path/VERSION"
-  # Create placeholder script
-  cat > "$install_path/bin/$TOOL_NAME" << 'SCRIPT'
+  cat > "$install_path/bin/$BINARY_NAME" << SCRIPT
 #!/usr/bin/env bash
-echo "$TOOL_NAME meta plugin v$(cat "$(dirname "$0")/../VERSION")"
+echo "$TOOL_NAME $version - source compilation required"
+exit 1
 SCRIPT
-  chmod +x "$install_path/bin/$TOOL_NAME"
+  chmod +x "$install_path/bin/$BINARY_NAME"
 }
